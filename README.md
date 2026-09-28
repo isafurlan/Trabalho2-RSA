@@ -34,7 +34,7 @@ $$
 e = 65537
 $$
 
-O expoente privado `d` é calculado como o inverso multiplicativo de `e` módulo `\phi(n)`:
+O expoente privado `d` é calculado como o inverso multiplicativo de `e` módulo $\phi(n)$:
 
 $$
 d \equiv e^{-1} \pmod{\phi(n)}
@@ -51,8 +51,6 @@ O programa principal (`main.py`) exibe o valor abaixo para conferência dessa re
 $$
 (e \cdot d) \bmod \phi(n) = 1
 $$
-
-
 
 ### 3. Armazenamento das chaves
 
@@ -142,6 +140,9 @@ CifragemOAEPNode (Parte II)
 
 GerenciadorChavesNode (Parte II)
     └── geração de chave e carregamento validado dos arquivos JSON
+
+main_oaep.py (Parte II)
+    └── linha de comando para gerar chaves, cifrar e decifrar
 ```
 
 O arquivo principal (`main.py`) coordena a execução da Parte I, gera os primos, constrói o par de chaves, exibe os 
@@ -149,42 +150,26 @@ parâmetros e testa a exportação e a importação. A interface da Parte II fic
 
 ## Parte II — RSA-OAEP
 
-Cifragem e decifragem RSAES-OAEP conforme a RFC 8017 (PKCS #1 v2.2), seção 7.1, usando **SHA3-256** como função de hash 
-(`hLen = 32` bytes) e **MGF1** (apêndice B.2.1) como função de geração de máscara. As operações RSA, o OAEP e a MGF1 
-foram implementados sem bibliotecas criptográficas; a biblioteca padrão é usada apenas para o SHA3-256 
-(`hashlib.sha3_256`), para os bytes aleatórios do seed (`secrets`), Base64, JSON e argparse. A exponenciação modular 
-usa a função nativa `pow()` do Python, a mesma utilizada na Parte I.
+Cifragem e decifragem RSA-OAEP (RFC 8017) com SHA3-256 e MGF1, feitas sem bibliotecas de criptografia. Da biblioteca 
+padrão são usados só o SHA3-256 (`hashlib`), os bytes aleatórios (`secrets`), Base64, JSON e argparse. A exponenciação 
+modular usa o `pow()` do Python, como na Parte I. As chaves são as da Parte I, nos mesmos arquivos JSON.
 
-A Parte II reutiliza a Parte I sem modificá-la: `MillerRabinNode` e `ChaveRSANode` geram as chaves, e os arquivos 
-`public_key.json` / `private_key.json` são lidos no formato definido na seção 3.
+### Funcionalidades
 
-### Arquivos
+- `PrimitivasRSANode`: I2OSP, OS2IP, RSAEP e RSADP.
+- `MGF1Node`: MGF1 com SHA3-256.
+- `CifragemOAEPNode`: codificação OAEP, `encrypt` e `decrypt`.
+- `GerenciadorChavesNode`: gera chaves com a Parte I e carrega os arquivos JSON validando os campos.
+- `main_oaep.py`: linha de comando para gerar chaves, cifrar e decifrar.
 
-| Arquivo | Conteúdo |
-|---|---|
-| `PrimitivasRSANode.py` | `I2OSP`, `OS2IP` (RFC 8017, seção 4), `RSAEP`, `RSADP` (seção 5.1) e `key_size_bytes(n)` |
-| `MGF1Node.py` | `MGF1` com SHA3-256 (apêndice B.2.1) |
-| `CifragemOAEPNode.py` | Codificação/decodificação EME-OAEP e `encrypt` / `decrypt` (seção 7.1) |
-| `GerenciadorChavesNode.py` | Geração de chave com as garantias do `main.py` e carregamento validado dos arquivos JSON |
-| `main_oaep.py` | Interface de linha de comando |
+**Detalhes:**
 
-Assim como na Parte I, cada arquivo contém uma classe de mesmo nome, e os métodos são chamados diretamente pela 
-classe:
-
-```python
-from GerenciadorChavesNode import GerenciadorChavesNode
-from CifragemOAEPNode import CifragemOAEPNode
-
-public_key = GerenciadorChavesNode.load_public_key("public_key.json")     # (n, e)
-private_key = GerenciadorChavesNode.load_private_key("private_key.json")  # (n, d)
-
-C = CifragemOAEPNode.encrypt(public_key, "Mensagem secreta".encode("utf-8"))
-M = CifragemOAEPNode.decrypt(private_key, C).decode("utf-8")
-```
+- Label opcional (`--label`), que precisa ser o mesmo na cifragem e na decifragem.
+- A mesma mensagem cifrada duas vezes gera ciphertexts diferentes.
 
 ### Como executar
 
-Requer Python 3.8 ou superior, sem dependências externas. Todos os comandos são executados na raiz do projeto.
+Python 3.8 ou superior, sem dependências externas. Na raiz do projeto:
 
 ```text
 python main_oaep.py gerar-chaves
@@ -192,31 +177,30 @@ python main_oaep.py cifrar   --chave public_key.json  --mensagem "Mensagem secre
 python main_oaep.py decifrar --chave private_key.json --arquivo-cifrado cifrado.b64
 ```
 
-O primeiro comando gera as chaves, o segundo salva o ciphertext em Base64 no arquivo `cifrado.b64` e o terceiro lê esse 
-arquivo e mostra a mensagem original.
-
-Sem `--saida`, o comando `cifrar` mostra o Base64 no terminal. Nesse caso, copie o valor e passe-o entre aspas para o 
-`decifrar`, substituindo `COLE_AQUI_O_BASE64`:
+Passando o ciphertext direto pelo terminal:
 
 ```text
 python main_oaep.py cifrar   --chave public_key.json  --mensagem "Mensagem secreta"
-python main_oaep.py decifrar --chave private_key.json --ciphertext "COLE_AQUI_O_BASE64"
+python main_oaep.py decifrar --chave private_key.json --ciphertext "BASE64_GERADO_NO_COMANDO_ANTERIOR"
 ```
 
-Outras opções:
+Mensagem lida de arquivo e resultado salvo em arquivo:
 
 ```text
 python main_oaep.py cifrar   --chave public_key.json  --arquivo mensagem.txt --saida cifrado.b64
 python main_oaep.py decifrar --chave private_key.json --arquivo-cifrado cifrado.b64 --saida decifrado.txt
+```
+
+Com label:
+
+```text
 python main_oaep.py cifrar   --chave public_key.json  --mensagem "texto" --label "contexto" --saida cifrado.b64
 python main_oaep.py decifrar --chave private_key.json --arquivo-cifrado cifrado.b64 --label "contexto"
 ```
 
-O `--label` é o rótulo `L` do OAEP (padrão: vazio) e precisa ser o mesmo na cifragem e na decifragem.
-
 Entradas inválidas (Base64 malformado, arquivo de chave ausente ou corrompido, chave do tipo errado, mensagem longa 
-demais) geram uma mensagem de erro clara, sem stack trace. Qualquer falha na decifragem (ciphertext adulterado, chave 
-errada, label diferente) gera sempre a mesma mensagem:
+demais) mostram uma mensagem de erro curta, sem stack trace. Qualquer falha na decifragem (ciphertext adulterado, chave 
+errada, label diferente) mostra sempre o mesmo erro:
 
 ```text
 Erro: falha na decifragem (ciphertext inválido ou adulterado)
@@ -224,8 +208,8 @@ Erro: falha na decifragem (ciphertext inválido ou adulterado)
 
 ### Formato do ciphertext
 
-O ciphertext é uma string de exatamente `k` bytes, onde `k` é o tamanho de `n` em bytes (256 para uma chave de 
-2048 bits), codificada em **Base64** (344 caracteres para `k = 256`).
+O ciphertext tem `k` bytes, o tamanho de `n` em bytes: 256 bytes com chave de 2048 bits. Ele é mostrado e salvo em 
+**Base64**, com 344 caracteres.
 
 ### Limite de tamanho da mensagem
 
@@ -241,4 +225,3 @@ Erro: mensagem longa demais (191 bytes; o máximo para esta chave é 190 bytes).
 ```
 
 No código, o método `CifragemOAEPNode.encrypt` lança a exceção `MessageTooLongError` (`message too long`).
-
