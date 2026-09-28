@@ -21,6 +21,7 @@ Base64, JSON e argparse. A exponenciação modular usa o `pow()` do Python.
 | `GerenciadorChavesNode.py` | II | Geração de chaves e carregamento validado dos arquivos JSON |
 | `main_oaep.py` | II | Linha de comando para gerar chaves, cifrar e decifrar |
 | `AssinaturaPSSNode.py` | III | Cálculo do digest SHA3-256, codificação probabilística PSS e geração matemática da assinatura em Base64 |
+| `main_pss.py` | III | Linha de comando para orquestrar a assinatura |
 | `tests/` | — | Casos de teste |
 
 ## 🔑 Parte I — Geração e Gerenciamento de Chaves RSA
