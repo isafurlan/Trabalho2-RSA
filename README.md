@@ -68,6 +68,10 @@ resultado em arquivo) e `--label`. Use `python main_oaep.py <comando> --help` pa
 - A codificação é probabilística (EMSA-PSS-ENCODE): a aplicação de um salt aleatório garante que o mesmo arquivo gera assinaturas diferentes a cada execução, não sendo uma simples "cifragem do hash".
 - O resultado da assinatura tem tamanho idêntico ao do módulo (256 bytes para uma chave de 2048 bits) e é exportado em **Base64**. 
 
+```text
+python main_pss.py assinar --chave private_key.json --arquivo documento.txt --saida assinatura.b64
+```
+
 ## 🧪 Testes
 
 ```text
