@@ -21,6 +21,7 @@ Base64, JSON e argparse. A exponenciação modular usa o `pow()` do Python.
 | `GerenciadorChavesNode.py` | II | Geração de chaves e carregamento validado dos arquivos JSON |
 | `main_oaep.py` | II | Linha de comando para gerar chaves, cifrar e decifrar |
 | `AssinaturaPSSNode.py` | III | Cálculo do digest SHA3-256, codificação probabilística PSS e geração matemática da assinatura em Base64 |
+| `main_pss.py` | III | Linha de comando para orquestrar a assinatura |
 | `tests/` | — | Casos de teste |
 
 ## 🔑 Parte I — Geração e Gerenciamento de Chaves RSA
@@ -66,6 +67,10 @@ resultado em arquivo) e `--label`. Use `python main_oaep.py <comando> --help` pa
 - Assinatura de arquivos baseada no cálculo de digest com SHA3-256 e função de máscara MGF1.
 - A codificação é probabilística (EMSA-PSS-ENCODE): a aplicação de um salt aleatório garante que o mesmo arquivo gera assinaturas diferentes a cada execução, não sendo uma simples "cifragem do hash".
 - O resultado da assinatura tem tamanho idêntico ao do módulo (256 bytes para uma chave de 2048 bits) e é exportado em **Base64**. 
+
+```text
+python main_pss.py assinar --chave private_key.json --arquivo documento.txt --saida assinatura.b64
+```
 
 ## 🧪 Testes
 
