@@ -88,6 +88,7 @@ Executa todos os testes (alguns segundos, pois gera chaves de 2048 bits).
 | `tests/test_parte1.py` | Miller-Rabin com primos, compostos e números de Carmichael; primos de 1024 bits; parâmetros da chave (`n = p·q`, 2048 bits, `gcd(e, φ) = 1`, `e·d ≡ 1`); exportação/importação; arquivo de chave inválido |
 | `tests/test_parte2.py` | Cifrar e decifrar (mensagem vazia, UTF-8, 190 bytes); rejeição acima de 190 bytes; cifragem probabilística; MGF1; detecção de ciphertext adulterado, chave errada e label diferente; erro único para todas as falhas de padding; entradas inválidas na linha de comando |
 | `tests/test_parte3.py` | Geração do digest com tamanho exato de 32 bytes; formatação da estrutura do padding PSS; tratamento de exceções para leitura de arquivos inexistentes |
+| `tests/test_parte4.py` | Comportamento de rejeição da verificação ao corromper propositalmente exatamente um byte do arquivo original, um byte da assinatura ou os parâmetros da chave pública |
 
 
 ## 👩‍💻 Desenvolvido por
