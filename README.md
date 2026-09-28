@@ -20,8 +20,9 @@ Base64, JSON e argparse. A exponenciação modular usa o `pow()` do Python.
 | `CifragemOAEPNode.py` | II | Codificação EME-OAEP, cifragem e decifragem |
 | `GerenciadorChavesNode.py` | II | Geração de chaves e carregamento validado dos arquivos JSON |
 | `main_oaep.py` | II | Linha de comando para gerar chaves, cifrar e decifrar |
-| `AssinaturaPSSNode.py` | III | Cálculo do digest SHA3-256, codificação probabilística PSS e geração matemática da assinatura em Base64 |
-| `main_pss.py` | III | Linha de comando para orquestrar a assinatura |
+| `AssinaturaPSSNode.py` | III | Cálculo do digest SHA3-256, codificação probabilística PSS e geração da assinatura em Base64 |
+| `VerificacaoPSSNode.py` | IV | Parsing do formato Base64, recuperação do hash original via chave pública e verificação de integridade |
+| `main_pss.py` | III e IV | Linha de comando para orquestrar a assinatura e a verificação de arquivos |
 | `tests/` | — | Casos de teste |
 
 ## 🔑 Parte I — Geração e Gerenciamento de Chaves RSA
@@ -63,13 +64,15 @@ python main_oaep.py decifrar --chave private_key.json --arquivo-cifrado cifrado.
 Outras opções: `--arquivo` (mensagem lida de arquivo), `--ciphertext` (Base64 direto no terminal), `--saida` (grava o
 resultado em arquivo) e `--label`. Use `python main_oaep.py <comando> --help` para detalhes.
 
-## ✍️ Parte III — Assinatura Digital RSA-PSS
+## ✍️ Parte III e IV — Assinatura Digital e Verificação RSA-PSS
 - Assinatura de arquivos baseada no cálculo de digest com SHA3-256 e função de máscara MGF1.
-- A codificação é probabilística (EMSA-PSS-ENCODE): a aplicação de um salt aleatório garante que o mesmo arquivo gera assinaturas diferentes a cada execução, não sendo uma simples "cifragem do hash".
-- O resultado da assinatura tem tamanho idêntico ao do módulo (256 bytes para uma chave de 2048 bits) e é exportado em **Base64**. 
+- A codificação é probabilística (EMSA-PSS-ENCODE): a aplicação de um salt aleatório garante que o mesmo arquivo gera assinaturas diferentes a cada execução, distanciando-se da abordagem simplificada de apenas cifrar o hash.
+- O resultado da assinatura tem tamanho idêntico ao do módulo (256 bytes para uma chave de 2048 bits) e é exportado em **Base64**.
+- A etapa de verificação recupera os campos, valida o padding inverso e informa claramente se o arquivo é íntegro. Qualquer adulteração de exatamente um byte (no arquivo, na assinatura ou na chave pública) resulta na rejeição imediata da validação.
 
 ```text
 python main_pss.py assinar --chave private_key.json --arquivo documento.txt --saida assinatura.b64
+python main_pss.py verificar --chave public_key.json --arquivo documento.txt --assinatura assinatura.b64
 ```
 
 ## 🧪 Testes
