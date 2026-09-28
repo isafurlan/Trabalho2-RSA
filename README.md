@@ -20,6 +20,7 @@ Base64, JSON e argparse. A exponenciação modular usa o `pow()` do Python.
 | `CifragemOAEPNode.py` | II | Codificação EME-OAEP, cifragem e decifragem |
 | `GerenciadorChavesNode.py` | II | Geração de chaves e carregamento validado dos arquivos JSON |
 | `main_oaep.py` | II | Linha de comando para gerar chaves, cifrar e decifrar |
+| `AssinaturaPSSNode.py` | III | Cálculo do digest SHA3-256, codificação probabilística PSS e geração matemática da assinatura em Base64 |
 | `tests/` | — | Casos de teste |
 
 ## 🔑 Parte I — Geração e Gerenciamento de Chaves RSA
@@ -61,6 +62,11 @@ python main_oaep.py decifrar --chave private_key.json --arquivo-cifrado cifrado.
 Outras opções: `--arquivo` (mensagem lida de arquivo), `--ciphertext` (Base64 direto no terminal), `--saida` (grava o
 resultado em arquivo) e `--label`. Use `python main_oaep.py <comando> --help` para detalhes.
 
+## ✍️ Parte III — Assinatura Digital RSA-PSS
+- Assinatura de arquivos baseada no cálculo de digest com SHA3-256 e função de máscara MGF1.
+- A codificação é probabilística (EMSA-PSS-ENCODE): a aplicação de um salt aleatório garante que o mesmo arquivo gera assinaturas diferentes a cada execução, não sendo uma simples "cifragem do hash".
+- O resultado da assinatura tem tamanho idêntico ao do módulo (256 bytes para uma chave de 2048 bits) e é exportado em **Base64**. 
+
 ## 🧪 Testes
 
 ```text
@@ -73,6 +79,7 @@ Executa todos os testes (alguns segundos, pois gera chaves de 2048 bits).
 |---|---|
 | `tests/test_parte1.py` | Miller-Rabin com primos, compostos e números de Carmichael; primos de 1024 bits; parâmetros da chave (`n = p·q`, 2048 bits, `gcd(e, φ) = 1`, `e·d ≡ 1`); exportação/importação; arquivo de chave inválido |
 | `tests/test_parte2.py` | Cifrar e decifrar (mensagem vazia, UTF-8, 190 bytes); rejeição acima de 190 bytes; cifragem probabilística; MGF1; detecção de ciphertext adulterado, chave errada e label diferente; erro único para todas as falhas de padding; entradas inválidas na linha de comando |
+| `tests/test_parte3.py` | Geração do digest com tamanho exato de 32 bytes; formatação da estrutura do padding PSS; tratamento de exceções para leitura de arquivos inexistentes |
 
 
 ## 👩‍💻 Desenvolvido por
