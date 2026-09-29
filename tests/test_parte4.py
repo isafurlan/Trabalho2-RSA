@@ -67,6 +67,7 @@ class TestVerificacaoPSSNode(unittest.TestCase):
             caminho_corrompido, self.assinatura_valida, self.chave_publica
         )
         self.assertFalse(integro, "O verificador deve rejeitar um ficheiro com 1 byte corrompido.")
+        self.assertNotIn("Estrutura inválida", msg)
 
     # Testa a adulteração de exatamente 1 byte na assinatura Base64
     def test_adulterar_um_byte_assinatura(self):
@@ -79,6 +80,7 @@ class TestVerificacaoPSSNode(unittest.TestCase):
             self.caminho_teste, assinatura_corrompida, self.chave_publica
         )
         self.assertFalse(integro, "O verificador deve rejeitar uma assinatura com 1 byte corrompido.")
+        self.assertNotIn("Estrutura inválida", msg)
 
     # Testa a verificação utilizando uma chave pública adulterada (módulo errado)
     def test_adulterar_chave_publica(self):
@@ -91,6 +93,7 @@ class TestVerificacaoPSSNode(unittest.TestCase):
             self.caminho_teste, self.assinatura_valida, chave_corrompida
         )
         self.assertFalse(integro, "O verificador deve rejeitar a verificação se a chave pública for alterada.")
+        self.assertNotIn("Estrutura inválida", msg)
 
 if __name__ == '__main__':
     unittest.main()

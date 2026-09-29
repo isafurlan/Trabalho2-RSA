@@ -11,15 +11,13 @@ from AssinaturaPSSNode import AssinaturaPSSNode
 # Testes unitários da Parte 3
 class TestAssinaturaPSSNode(unittest.TestCase):
 
-    # Inicializa o assinador, cria o arquivo temporário e define a chave mockada
+    # Inicializa o assinador e cria o arquivo temporário
     def setUp(self):
         self.assinador = AssinaturaPSSNode()
         self.caminho_teste = os.path.join(DIRETORIO_ATUAL, "arquivo_temporario.txt")
         with open(self.caminho_teste, 'w') as f:
             f.write("Conteúdo para teste de assinatura PSS.")
-        # Chave RSA pequena para teste          
-        self.chave_mock = {'n': 3233, 'd': 2753}
-        
+
     def test_calcular_digest_arquivo(self):
         digest = self.assinador.calcular_digest_arquivo(self.caminho_teste)
         

@@ -28,7 +28,7 @@ class VerificacaoPSSNode:
 
             # Parsing da assinatura
             assinatura_bytes = base64.b64decode(assinatura_b64)
-            k = PrimitivasRSANode.tamanho_em_bytes(n)
+            k = PrimitivasRSANode.key_size_bytes(n)
             if len(assinatura_bytes) != k:
                 return False, 'Assinatura inválida: tamanho incorreto'
 
@@ -79,5 +79,5 @@ class VerificacaoPSSNode:
             else:
                 return False, 'REJEITADO: A assinatura é inválida (os hashes não correspondem).'
 
-        except Exception as e:
-            return False, f'REJEITADO: Estrutura inválida ou corrompida. Erro: {str(e)}'
+        except Exception:
+            return False, 'REJEITADO: Estrutura inválida ou corrompida.'
