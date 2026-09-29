@@ -79,6 +79,7 @@ resultado em arquivo) e `--label`. Use `python main_oaep.py <comando> --help` pa
 - A etapa de verificação recupera os campos, valida o padding inverso e informa claramente se o arquivo é íntegro. Qualquer adulteração de exatamente um byte (no arquivo, na assinatura ou na chave pública) resulta na rejeição imediata da validação.
 
 ```text
+echo Documento de teste > documento.txt
 python main_pss.py assinar --chave private_key.json --arquivo documento.txt --saida assinatura.b64
 python main_pss.py verificar --chave public_key.json --arquivo documento.txt --assinatura assinatura.b64
 ```
